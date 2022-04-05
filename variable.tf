@@ -9,6 +9,15 @@ variable "vsphere_password" {
 variable "vsphere_server" {
   type = string
 }
+
+variable "vault_addr" {
+  type = string
+}
+
+variable "vault_token" {
+  type = string  
+}
+
 variable "dc" {
   type = string
 

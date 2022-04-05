@@ -4,17 +4,34 @@ terraform {
       source  = "hashicorp/vsphere"
       version = "2.0.2"
     }
+    vault = {
+      source = "hashicorp/vault"
+      version = "2.19.0"
+    }
   }
 }
 
-provider "vsphere" {
-  #vim_keep_alive = 30
-  user           = var.vsphere_user
-  password       = var.vsphere_password
-  vsphere_server = var.vsphere_server
+provider "vault" {
+  skip_tls_verify = true
+  address         = var.vault_addr
+  token           = var.vault_token
+}
 
+provider "vsphere" {
+
+#  user           = var.vsphere_user
+#  password       = var.vsphere_password
+#  vsphere_server = var.vsphere_server
+  
+  user           = data.vault_generic_secret.vsphere.data.vsphere_user
+  password       = data.vault_generic_secret.vsphere.data.vsphere_password
+  vsphere_server = data.vault_generic_secret.vsphere.data.vsphere_server
   # If you have a self-signed cert
   allow_unverified_ssl = true
+}
+
+data "vault_generic_secret" "vsphere" {
+  path = "vcenter/vcenter_vsphere_credentials"
 }
 
 data "vsphere_datacenter" "dc" {
